@@ -8,7 +8,9 @@ router.get('/', function (req, res) {
 });
 
 var taskController = require('./taskController');
+var daraWarehousing = require('./dataWarehousing');
 
 router.use('/task', taskController);
+router.use('/data', dataWarehousing);
 
 module.exports = router;
