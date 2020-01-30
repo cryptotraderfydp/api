@@ -7,8 +7,12 @@ router.get('/', function (req, res) {
     });
 });
 
-var taskController = require('./taskController');
+// var taskController = require('./taskController');
 
-router.use('/task', taskController);
+// router.use('/task', taskController);
+
+var actionController = require('./action/actionController');
+
+router.use('/action', actionController);
 
 module.exports = router;

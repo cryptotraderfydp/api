@@ -1,10 +1,10 @@
-let connectionString = "mongodb+srv://cryptotrader:uwaterloo498@cluster0-qhav0.mongodb.net/test?retryWrites=true&w=majority";
+// let connectionString = "mongodb+srv://cryptotrader:uwaterloo498@cluster0-qhav0.mongodb.net/test?retryWrites=true&w=majority";
 
 let express = require('express');
 
 let bodyParser = require('body-parser');
 
-let mongoose = require('mongoose');
+// let mongoose = require('mongoose');
 
 let app = express();
 
@@ -16,14 +16,14 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-mongoose.connect(connectionString, { useNewUrlParser: true});
-var db = mongoose.connection;
+// mongoose.connect(connectionString, { useNewUrlParser: true});
+// var db = mongoose.connection;
 
 
-if(!db)
-    console.log("Error connecting db")
-else
-    console.log("Db connected successfully")
+// if(!db)
+//     console.log("Error connecting db")
+// else
+//     console.log("Db connected successfully")
 
 
 var port = 18080;
