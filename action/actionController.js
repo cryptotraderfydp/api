@@ -2,8 +2,6 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
-const BinanceClient = require('../binance/binanceClient');
-
 router.use(express.json())
 
 router.use(bodyParser.json());
@@ -24,8 +22,6 @@ router.use(bodyParser.urlencoded({
 // }
 
 router.post('/start', function(req, res) {
-    binanceClient = new BinanceClient()
-    binanceClient.test();
     return res.status(200).json({
         message: 'start successfully'
     });
