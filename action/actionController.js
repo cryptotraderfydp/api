@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
+const Init = require('../fsm/fsm')
+
 router.use(express.json())
 
 router.use(bodyParser.json());
@@ -22,6 +24,8 @@ router.use(bodyParser.urlencoded({
 // }
 
 router.post('/start', function(req, res) {
+    let init_satte =new Init();
+
     return res.status(200).json({
         message: 'start successfully'
     });

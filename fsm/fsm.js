@@ -20,44 +20,53 @@
  *                                                
  * 
  */
+var sleep = require('system-sleep');
 
 
-
-
-
-
-class init{
+class Init{
     constructor(){
-        print("successfully initialized init state!");
+        console.log("successfully initialized init state!");
+        
+        // TODO: go to idle at 整点
+        this.goIdle();
     };
 
-    static goIdle(){
-        
+    goIdle(){
+        let idle = new Idle();
     };  
 };
 
-class idle{
+class Idle{
     constructor(){
-
+        console.log("successfully initialized idle state!");
+        this.clock();
     };
 
-    static goRunAlgo(){
+    clock(){
+        console.log("clock function called");
+        // TODO: call gorunalgo() every 1 min
+        
+        while(1){
+            this.goRunAlgo();
+            sleep(1000); // 1 seconds
+        }
+        
+    }
 
+    goRunAlgo(){
+        console.log("running algorithm");
+        let runAlgo = new RunAlgo();
     };
 }
 
-class runAlgo{
+class RunAlgo{
     constructor(){
-
+        console.log("runalgo state initialized");
     };
 
     // get data every 5 minutes
     static getData(){
-        while(1){
-            // call api
-
-            sleeep(300000);
-        }
+        // TODO: call api to gte data here
     };
 
     // find the intersetion
@@ -102,3 +111,5 @@ class buy{
 
     }
 }
+
+module.exports = Init;
