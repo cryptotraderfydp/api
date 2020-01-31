@@ -10,7 +10,8 @@ class BinanceClient {
         })
     }
     async GetMovingAvg(){
-        let avgFiveMin = await this.binanceClient.avgPrice({ symbol: Constant.SYMBOL })
+        const avgFiveMinRequest = await this.binanceClient.avgPrice({ symbol: Constant.SYMBOL })
+        const avgFiveMin = parseFloat(avgFiveMinRequest.price)
         // console.log(await this.binanceClient.avgPrice({ symbol: Constant.SYMBOL }))
         // console.log(await this.binanceClient.candles({ symbol: 'BNBBTC', interval: "1m", limit: 5 }))
         const candlieList = await this.binanceClient.candles({ symbol: Constant.SYMBOL, interval: Constant.CANDLE_INTERVAL, limit: Constant.CANDLE_LIMIT })
