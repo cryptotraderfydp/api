@@ -37,4 +37,12 @@ router.post('/stop', function(req, res) {
     });
 });
 
+router.get('/test', function(req, res) {
+    console.log("test")
+
+    return res.status(200).json({
+        message: 'test'
+    });
+});
+
 module.exports = router;
