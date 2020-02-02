@@ -1,13 +1,15 @@
 var BinanceClient = require("../binance/binanceClient")
 var Constant = require('./constant')
 
-class MovingAverageStrategy {
+class AverageDifferenceStrategy {
     constructor(){
         this.binanceClient = new BinanceClient()
         this.prevState = Constant.FIVE_IDLE
     }
     async GetDecision(){
-        const movingAvg = await this.binanceClient.GetMovingAvg(Constant.CANDLE_INTERVAL_MOVING_AVG)
+        const currentPrice = await this.binanceClient.GetCurrentPrice()
+        const movingAvg = await this.binanceClient.GetMovingAvg(Constant.CANDLE_INTERVAL_AVG_DIFF)
+        const diff = Math.abs(movingAvg[0] - movingAvg[1]) - currentPrice * Constant.TRANSACTION_FEE
         // console.log(this.prevState)
         // console.log(movingAvg)
         if (this.prevState === Constant.FIVE_IDLE) {
@@ -28,7 +30,12 @@ class MovingAverageStrategy {
                 // 5 cross 25 from top
                 if (movingAvg[0] < movingAvg[1]){
                     this.prevState = Constant.FIVE_SMALL
-                    return Constant.STRATEGY_SELL
+                    if (diff > 0) {
+                        return Constant.STRATEGY_SELL
+                    }
+                    else {
+                        return Constant.STRATEGY_HOLD
+                    }
                 }
                 // same trend
                 else{
@@ -39,7 +46,12 @@ class MovingAverageStrategy {
                 // 5 cross 25 from bottom
                 if (movingAvg[0] > movingAvg[1]){
                     this.prevState = Constant.FIVE_BIG
-                    return Constant.STRATEGY_BUY
+                    if (diff > 0) {
+                        return Constant.STRATEGY_BUY
+                    }
+                    else {
+                        return Constant.STRATEGY_HOLD
+                    }
                 }
                 // same trend
                 else{
@@ -49,4 +61,4 @@ class MovingAverageStrategy {
         }
     }
 }
-module.exports = MovingAverageStrategy;
+module.exports = AverageDifferenceStrategy;

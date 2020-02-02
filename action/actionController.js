@@ -4,6 +4,9 @@ var bodyParser = require('body-parser');
 
 const Init = require('../fsm/fsm')
 
+// var BinanceClient = require("../binance/binanceClient")
+// var binanceClient = new BinanceClient()
+
 router.use(express.json())
 
 router.use(bodyParser.json());
@@ -39,7 +42,9 @@ router.post('/stop', function(req, res) {
 
 router.get('/test', function(req, res) {
     console.log("test")
-
+    // binanceClient.GetCurrentPrice().then(function(result){
+    //     console.log(result)
+    // })
     return res.status(200).json({
         message: 'test'
     });
