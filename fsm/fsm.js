@@ -21,7 +21,11 @@
  * 
  */
 var sleep = require('system-sleep');
+var MovingAverageStrategy = require('../strategy/movingAverageStrategy');
+var {STRATEGY_BUY, STRATEGY_HOLD, STRATEGY_SELL} = require('../strategy/constant');
+const { Action_Interval } = require('../fsm/constant');
 
+let movingAverageStrategy = new MovingAverageStrategy();
 
 class Init{
     constructor(){
@@ -36,27 +40,36 @@ class Init{
     };  
 };
 
+
+
 class Idle{
     constructor(){
         console.log("successfully initialized idle state!");
         this.clock();
     };
 
-    clock(){
+    async clock(){
         console.log("clock function called");
         // TODO: call gorunalgo() every 1 min
         
+        let runAlgo = new RunAlgo();
+        
+
+        var count = 0
+
         while(1){
-            this.goRunAlgo();
-            sleep(1000); // 1 seconds
+            count ++;
+            //let decision = runAlgo.run();
+            let decision = await movingAverageStrategy.GetDecision();
+            console.log("decision:", decision);
+            console.log("count ",count);
+            sleep(Action_Interval);
+            var d = new Date();
+            console.log(d.getTime());
         }
         
     }
 
-    goRunAlgo(){
-        console.log("running algorithm");
-        let runAlgo = new RunAlgo();
-    };
 }
 
 class RunAlgo{
@@ -64,9 +77,31 @@ class RunAlgo{
         console.log("runalgo state initialized");
     };
 
+    // trasition function
+    run(){
+        console.log("run");
+       
+        let decision = this.getDecision();
+        
+        if(decision == STRATEGY_HOLD){
+            // decision is do nothing, go back to dile
+
+        }else if(decision == STRATEGY_SELL){
+            // decision is sell
+
+        }else if(decision == STRATEGY_BUY){
+            // decision is buy
+
+        }
+        
+        
+    }
+
     // get data every 5 minutes
-    static getData(){
-        // TODO: call api to gte data here
+    async getDecision(){
+        let decision = await movingAverageStrategy.GetDecision();
+        console.log("decision ", decision);
+        return decision;
     };
 
     // find the intersetion
