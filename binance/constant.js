@@ -4,6 +4,8 @@ const SYMBOL = "BNBBTC";
 // const SYMBOL = "BTCUSDT";
 const CANDLE_LIMIT = 25;
 const ORDER_BOOK_LIMIT = 100;
+const ORDER_BUY = "BUY";
+const ORDER_SELL = "SELL";
 
 module.exports = {
     API_KEY: API_KEY,
@@ -11,4 +13,6 @@ module.exports = {
     SYMBOL: SYMBOL,
     CANDLE_LIMIT: CANDLE_LIMIT,
     ORDER_BOOK_LIMIT: ORDER_BOOK_LIMIT,
+    ORDER_BUY: ORDER_BUY,
+    ORDER_SELL: ORDER_SELL,
 }

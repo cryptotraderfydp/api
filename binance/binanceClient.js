@@ -38,6 +38,26 @@ class BinanceClient {
         const orderBook = await this.binanceClient.book({ symbol: symbol, limit: Constant.ORDER_BOOK_LIMIT})
         return orderBook
     }
+    async PlaceBuyOrder(symbol, quantity, price){
+        const orderResult = await this.binanceClient.order({ symbol: symbol, side: Constant.ORDER_BUY, quantity: quantity, price: price })
+        return orderResult
+    }
+    async PlaceSellOrder(symbol, quantity, price){
+        const orderResult = await this.binanceClient.order({ symbol: symbol, side: Constant.ORDER_SELL, quantity: quantity, price: price })
+        return orderResult
+    }
+    async GetOrder(symbol, orderId){
+        const order = await this.binanceClient.getOrder({ symbol: symbol, orderId: orderId })
+        return order
+    }
+    async CancelOrder(symbol, orderId){
+        const order = await this.binanceClient.cancelOrder({ symbol: symbol, orderId: orderId })
+        return order
+    }
+    async GetAllOrders(symbol){
+        const orders = await this.binanceClient.allOrders({ symbol: symbol })
+        return orders
+    }
 }
 
 module.exports = BinanceClient;
