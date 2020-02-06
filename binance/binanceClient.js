@@ -34,6 +34,10 @@ class BinanceClient {
         const lastCandle = await this.binanceClient.candles({ symbol: Constant.SYMBOL, interval: "1m", limit: 1 })
         return parseFloat(lastCandle[0].close)
     }
+    async GetOrderBook(symbol){
+        const orderBook = await this.binanceClient.book({ symbol: symbol, limit: Constant.ORDER_BOOK_LIMIT})
+        return orderBook
+    }
 }
 
 module.exports = BinanceClient;

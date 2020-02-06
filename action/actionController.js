@@ -42,7 +42,7 @@ router.post('/stop', function(req, res) {
 
 router.get('/test', function(req, res) {
     console.log("test")
-    // binanceClient.GetCurrentPrice().then(function(result){
+    // binanceClient.GetOrderBook("WRXBTC").then(function(result){
     //     console.log(result)
     // })
     return res.status(200).json({
