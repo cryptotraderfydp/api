@@ -58,6 +58,10 @@ class BinanceClient {
         const orders = await this.binanceClient.allOrders({ symbol: symbol })
         return orders
     }
+    async GetAccountInfo(){
+        const info = await this.binanceClient.accountInfo()
+        return info
+    }
 }
 
 module.exports = BinanceClient;

@@ -40,14 +40,26 @@ router.post('/stop', function(req, res) {
     });
 });
 
-router.get('/test', function(req, res) {
-    console.log("test")
-    // binanceClient.GetOrderBook("WRXBTC").then(function(result){
-    //     console.log(result)
-    // })
-    return res.status(200).json({
-        message: 'test'
-    });
-});
+// router.get('/test', function(req, res) {
+//     console.log("test")
+//     binanceClient.GetOrder("BNBBTC", "327502885").then(function(result){
+//         console.log(result)
+//     }).catch((error)=>{
+//         console.log(error)
+//     })
+//     return res.status(200).json({
+//         message: 'test'
+//     });
+// });
+
+// router.get('/get', function(req, res) {
+//     console.log("get")
+//     binanceClient.GetAllOrders("BNBBTC").then(function(result){
+//         console.log(result)
+//     })
+//     return res.status(200).json({
+//         message: 'get'
+//     });
+// });
 
 module.exports = router;
