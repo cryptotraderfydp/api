@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
-const Init = require('../fsm/fsm')
+const Init = require('../fsm/fsm');
+const OrderBookStrategy = require('../fsm/fsm-order-book');
 
 // var BinanceClient = require("../binance/binanceClient")
 // var binanceClient = new BinanceClient()
@@ -27,7 +28,20 @@ router.use(bodyParser.urlencoded({
 // }
 
 router.post('/start', function(req, res) {
-    let init_satte =new Init();
+    console.log("Crypto Trader started...");
+    
+    const strategy = req.body.strategy;
+
+    if(strategy == "1"){
+        console.log("Strategy 1 (moving avergae line) is selected.");
+        let init_state = new Init();
+    }
+
+    if(strategy == "2"){
+        console.log("Strategy 2 (order book) is selected.");
+        let orderBookStrategy = new OrderBookStrategy();
+    }
+    
 
     return res.status(200).json({
         message: 'start successfully'
