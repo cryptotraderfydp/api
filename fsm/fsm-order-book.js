@@ -43,7 +43,17 @@ class OrderBookStrategy {
         while(1){
             console.log("iteration number ", count);
             count++;
+
+            // check balance before run algorithm
+            if(this.checkBalance() == false){
+                console.log("There is something wrong with balance, exiting...");
+                break;
+            }
+
+            // run strategy algorithm
             this.algo();  
+
+            // sleep 
             Sleep(Strategy_2_Pulling_Interval);
         }
     }
@@ -54,13 +64,57 @@ class OrderBookStrategy {
         //console.log("orderbook ", orderBook);
         const { buyA, sellA, buyVolumn, sellVolumn } = await this.getDecision(orderBook);
 
+        // if decision is not buy or sell, do nothing
+        if(buyA == false && sellA == false){
+            return;
+        }
+
+        // 100% A, 0% B, sell 50% A
+        if(buyA == false && sellA == true){
+            // TODO: transaction sell A
+            // volumn is 0.5 * balanceA
+            return;
+        }
+
+        // 0% A, 100% B, buy 50% A
+        if(buyA == true && sellA == false){
+            //TODO: transaction buy A
+            // volumn is 0.5 * balanceB
+            return;
+        }
+
+        // 50% A, 50%B, buy and sell A
+        if(buyA == true && sellA == true){
+            //TODO: transaction sell and buy A
+            // volumn is 0.5 * balanceA
+            return;
+        }
         
     }
 
-    // TODO: return 
+    // TODO: scan through order book and decide should we sell how many A and buy how many A
     async getDecision(orderBook){
         let buyA = false;
         let sellA = false;
+        let priceA = 0;
+        let priceB = 0;
+
+        return { buyA, sellA, priceA, priceB };
+    }
+
+    // balance has to be one of the condition: (50% A, 50% B) (100%A, 0%B) (0%A, 100%B)
+    // return correct if true else false
+    checkBalance(){
+        if(this.Balance_A==0){
+            return true;
+        }
+        if(this.Balance_B==0){
+            return true;
+        }
+        if(this.Balance_A==this.Balance_B){
+            return true;
+        }
+        return false;
     }
 
 }
