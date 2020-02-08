@@ -30,8 +30,16 @@ class BinanceClient {
         // console.log("avg 25: "+avgTwentyFive)
         return [avgFiveMin, avgTwentyFive]
     }
-    async GetCurrentPrice(){
-        const lastCandle = await this.binanceClient.candles({ symbol: Constant.SYMBOL, interval: "1m", limit: 1 })
+    // async GetCurrentPrice(){
+    //     const lastCandle = await this.binanceClient.candles({ symbol: Constant.SYMBOL, interval: "1m", limit: 1 })
+    //     return parseFloat(lastCandle[0].close)
+    // }
+    async GetCurrentPrice(symbol){
+        const lastCandle = await this.binanceClient.candles({ symbol, interval: "1m", limit: 1 })
+        return parseFloat(lastCandle[0].close)
+    }
+    async GetCurrentUSDTPrice(symbol){
+        const lastCandle = await this.binanceClient.candles({ symbol: symbol+"USDT", interval: "1m", limit: 1 })
         return parseFloat(lastCandle[0].close)
     }
     async GetOrderBook(symbol){
