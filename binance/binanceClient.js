@@ -1,5 +1,6 @@
 const Binance = require('binance-api-node').default
 var Constant = require('./constant')
+var StrategyConstant = require('../strategy/constant')
 
 
 class BinanceClient {
@@ -10,20 +11,27 @@ class BinanceClient {
         })
     }
     async GetMovingAvg(candleInterval){
-        const avgFiveMinRequest = await this.binanceClient.avgPrice({ symbol: Constant.SYMBOL })
-        const avgFiveMin = parseFloat(avgFiveMinRequest.price)
+        var avgFiveMin = 0
+        if (candleInterval == StrategyConstant.CANDLE_INTERVAL_MOVING_AVG){
+            var avgFiveMinRequest = await this.binanceClient.avgPrice({ symbol: Constant.SYMBOL })
+            avgFiveMin = parseFloat(avgFiveMinRequest.price)
+        }
         // console.log(await this.binanceClient.avgPrice({ symbol: Constant.SYMBOL }))
         // console.log(await this.binanceClient.candles({ symbol: 'BNBBTC', interval: "1m", limit: 5 }))
         const candleList = await this.binanceClient.candles({ symbol: Constant.SYMBOL, interval: candleInterval, limit: Constant.CANDLE_LIMIT })
-        // let sumFive = 0
+        let sumFive = 0
         let sumTwentyFive = 0
         for (var i=0; i<Constant.CANDLE_LIMIT; i++){
-            // if(i < 5){
-            //     sumFive += parseFloat(candleList[i].close)
-            // }
+            if (candleInterval == CANDLE_INTERVAL_AVG_DIFF){
+                if(i < 5){
+                    sumFive += parseFloat(candleList[i].close)
+                }
+            }
             sumTwentyFive += parseFloat(candleList[i].close)
-        } 
-        // let avgFiveMin = sumFive / 5
+        }
+        if (candleInterval == CANDLE_INTERVAL_AVG_DIFF){
+            avgFiveMin = sumFive / 5
+        }
         let avgTwentyFive = sumTwentyFive / Constant.CANDLE_LIMIT
 
         // console.log("avg 5: "+avgFiveMin)
