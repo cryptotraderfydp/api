@@ -1,8 +1,8 @@
 const Action_Interval = 1000;
-const A = 'BTC';
-const B = 'BNB';
+const A = 'BNB';
+const B = 'BTC';
 const USDT = 'USDT';
-const Strategy_2_Pulling_Interval = 10000;
+const Strategy_2_Pulling_Interval = 5000;
 
 module.exports = {
     Action_Interval: Action_Interval,
