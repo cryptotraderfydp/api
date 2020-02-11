@@ -7,7 +7,8 @@ class AverageDifferenceStrategy {
         this.prevState = Constant.FIVE_IDLE
     }
     async GetDecision(){
-        const currentPrice = await this.binanceClient.GetCurrentPrice()
+        // todo: pass symbol as a variable 
+        const currentPrice = await this.binanceClient.GetCurrentPrice("BNBBTC")
         const movingAvg = await this.binanceClient.GetMovingAvg(Constant.CANDLE_INTERVAL_AVG_DIFF)
         const diff = Math.abs(movingAvg[0] - movingAvg[1]) - currentPrice * Constant.TRANSACTION_FEE
         // console.log(this.prevState)
