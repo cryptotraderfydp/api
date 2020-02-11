@@ -5,11 +5,13 @@ const Sleep = require('system-sleep');
 class OrderBookStrategy {
     constructor() {
         console.log("Strategy 2 is initialized.");
-        this.balanceThereshold = 0.1
+        this.balanceThereshold = 0.4
         this.state = "BUY_SELL" // "BUY_SELL" "BUY" "SELL" 
         this.binanceClient = new BinanceClient();
         this.Balance_A = 0;
         this.Balance_B = 0;
+        this.A_USDT_price = 0;
+        this.B_USDT_price = 0;
         this.Balance_A_USDT = 0;
         this.Balance_B_USDT = 0;
         this.Balance_sum_USDT = 0;
@@ -43,14 +45,14 @@ class OrderBookStrategy {
         console.log("this.Balance_A is: ", this.Balance_A);
         console.log("this.Balance_B is: ", this.Balance_B);
 
-        const A_USDT_price = await this.binanceClient.GetCurrentUSDTPrice(A);
-        const B_USDT_price = await this.binanceClient.GetCurrentUSDTPrice(B);
+        this.A_USDT_price = await this.binanceClient.GetCurrentUSDTPrice(A);
+        this.B_USDT_price = await this.binanceClient.GetCurrentUSDTPrice(B);
 
-        console.log("A_USDT_price is: ", A_USDT_price);
-        console.log("B_USDT_price is: ", B_USDT_price);
+        console.log("this.A_USDT_price is: ", this.A_USDT_price);
+        console.log("this.B_USDT_price is: ", this.B_USDT_price);
 
-        this.Balance_A_USDT = this.Balance_A * A_USDT_price;
-        this.Balance_B_USDT = this.Balance_B * B_USDT_price;
+        this.Balance_A_USDT = this.Balance_A * this.A_USDT_price;
+        this.Balance_B_USDT = this.Balance_B * this.B_USDT_price;
         console.log("Balance_A_USDT is: ", this.Balance_A_USDT );
         console.log("Balance_B_USDT is: ", this.Balance_B_USDT);
         this.Balance_sum_USDT = this.Balance_A_USDT + this.Balance_B_USDT
@@ -151,17 +153,17 @@ class OrderBookStrategy {
                 break;
             case "BUY":
                 console.log("in BUY state");
-                const buyQuantity_B = this.changePrecision(this.Balance_B / currentPrice * 0.5, 2);
-                console.log("placing order, buyQuantity_B is: ", buyQuantity_B);
-                const buyOrderResult_B = await this.binanceClient.PlaceBuyOrder(A+B, buyQuantity_B, buyPrice);
+                const buyQuantity_BUY = this.changePrecision(this.Balance_sum_USDT / this.A_USDT_price / 2 - this.Balance_A, 2);
+                console.log("placing order, buyQuantity_BUY is: ", buyQuantity_BUY);
+                const buyOrderResult_B = await this.binanceClient.PlaceBuyOrder(A+B, buyQuantity_BUY, buyPrice);
                 this.sellOrderId = 0;
                 this.buyOrderId = buyOrderResult_B.orderId;
                 break;
             case "SELL":
                 console.log("in SELL state");
-                const sellQuantity_S = this.changePrecision(this.Balance_A * 0.5, 2);
-                console.log("placing order, sellQuantity_S is: ", sellQuantity_S);
-                const sellOrderResult_S = await this.binanceClient.PlaceSellOrder(A+B, sellQuantity_S, sellPrice);
+                const sellQuantity_SELL = this.changePrecision(this.Balance_A - this.Balance_sum_USDT / this.A_USDT_price / 2, 2);
+                console.log("placing order, sellQuantity_SELL is: ", sellQuantity_SELL);
+                const sellOrderResult_S = await this.binanceClient.PlaceSellOrder(A+B, sellQuantity_SELL, sellPrice);
                 this.sellOrderId = sellOrderResult_S.orderId;
                 this.buyOrderId = 0;
                 break;
@@ -172,7 +174,7 @@ class OrderBookStrategy {
         }
     }
 
-    updateState(allOrders){
+    updateState(){
         if(this.Balance_A_USDT / this.Balance_sum_USDT < this.balanceThereshold){
             this.state = "BUY";
         } else if(this.Balance_A_USDT / this.Balance_sum_USDT > 1 - this.balanceThereshold){
@@ -180,7 +182,9 @@ class OrderBookStrategy {
         } else {
             this.state = "BUY_SELL";
         }
-        // this.state = "OTHER";
+        if(this.Balance_sum_USDT < 1) {
+            this.state = "OTHER";
+        }
         console.log("state: " + this.state);
     }
     
@@ -188,8 +192,8 @@ class OrderBookStrategy {
         let sum = 0;
         for(let i = 0; i < bids.length; i++){
             sum += Number(bids[i].quantity);
-            // 80 and 0.0000001 is temporary
-            if(sum >= 80) {
+            // 150 and 0.0000001 is temporary
+            if(sum >= 150) {
                 const edgePrice = this.changePrecision(Number(bids[i].price) + 0.0000001, 7);
                 return edgePrice.toString();
             }
@@ -201,7 +205,7 @@ class OrderBookStrategy {
         let sum = 0;
         for(let i = 0; i < asks.length; i++){
             sum += Number(asks[i].quantity);
-            if(sum >= 80) {
+            if(sum >= 150) {
                 const edgePrice = this.changePrecision(Number(asks[i].price) - 0.0000001, 7);
                 return edgePrice.toString();
             }
