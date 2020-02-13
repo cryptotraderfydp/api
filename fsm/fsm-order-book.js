@@ -65,8 +65,8 @@ class OrderBookStrategy {
         let count = 1;
         // run algo every 10 second
         while(1){
-            console.log("iteration number ", count);
             console.log("\n \n \n");
+            console.log("iteration number ", count);
             count++;
 
             // run strategy algorithm
@@ -113,7 +113,7 @@ class OrderBookStrategy {
         console.log("sellPrice is: ", sellPrice);
         console.log("currentPrice is: ", currentPrice);
         console.log("gap ratio is ", (sellPrice - buyPrice) / currentPrice)
-        if((sellPrice - buyPrice) / currentPrice < 0.9/1000) {
+        if((sellPrice - buyPrice) / currentPrice < 1.1/1000) {
             console.log("in algo, gap is not big enough");
             return;
         }
@@ -144,10 +144,11 @@ class OrderBookStrategy {
                 console.log("in BUY_SELL state");
                 const sellQuantity_BS = this.changePrecision(this.Balance_A * 0.99, 2);
                 const buyQuantity_BS = this.changePrecision(this.Balance_B / currentPrice * 0.99, 2);
+                const quantity = Math.min(sellQuantity_BS, buyQuantity_BS);
                 console.log("placing order, sellQuantity_BS is: ", sellQuantity_BS);
                 console.log("placing order, buyQuantity_BS is: ", buyQuantity_BS);
-                const sellOrderResult_BS = await this.binanceClient.PlaceSellOrder(A+B, sellQuantity_BS, sellPrice);
-                const buyOrderResult_BS = await this.binanceClient.PlaceBuyOrder(A+B, buyQuantity_BS, buyPrice);
+                const sellOrderResult_BS = await this.binanceClient.PlaceSellOrder(A+B, quantity, sellPrice);
+                const buyOrderResult_BS = await this.binanceClient.PlaceBuyOrder(A+B, quantity, buyPrice);
                 this.sellOrderId = sellOrderResult_BS.orderId;
                 this.buyOrderId = buyOrderResult_BS.orderId;
                 break;
@@ -192,8 +193,8 @@ class OrderBookStrategy {
         let sum = 0;
         for(let i = 0; i < bids.length; i++){
             sum += Number(bids[i].quantity);
-            // 150 and 0.0000001 is temporary
-            if(sum >= 150) {
+            // 80 and 0.0000001 is temporary
+            if(sum >= 80) {
                 const edgePrice = this.changePrecision(Number(bids[i].price) + 0.0000001, 7);
                 return edgePrice.toString();
             }
@@ -205,7 +206,7 @@ class OrderBookStrategy {
         let sum = 0;
         for(let i = 0; i < asks.length; i++){
             sum += Number(asks[i].quantity);
-            if(sum >= 150) {
+            if(sum >= 80) {
                 const edgePrice = this.changePrecision(Number(asks[i].price) - 0.0000001, 7);
                 return edgePrice.toString();
             }
