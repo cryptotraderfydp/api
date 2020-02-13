@@ -5,8 +5,8 @@ var bodyParser = require('body-parser');
 const Init = require('../fsm/fsm');
 const OrderBookStrategy = require('../fsm/fsm-order-book');
 
-// var BinanceClient = require("../binance/binanceClient")
-// var binanceClient = new BinanceClient()
+var BinanceClient = require("../binance/binanceClient")
+var binanceClient = new BinanceClient()
 
 router.use(express.json())
 
@@ -54,17 +54,17 @@ router.post('/stop', function(req, res) {
     });
 });
 
-// router.get('/test', function(req, res) {
-//     console.log("test")
-//     binanceClient.GetOrder("BNBBTC", "327502885").then(function(result){
-//         console.log(result)
-//     }).catch((error)=>{
-//         console.log(error)
-//     })
-//     return res.status(200).json({
-//         message: 'test'
-//     });
-// });
+router.get('/test', function(req, res) {
+    console.log("test")
+    binanceClient.GetMovingAvg("1m").then(function(result){
+        console.log(result)
+    }).catch((error)=>{
+        console.log(error)
+    })
+    return res.status(200).json({
+        message: 'test'
+    });
+});
 
 // router.get('/get', function(req, res) {
 //     console.log("get")

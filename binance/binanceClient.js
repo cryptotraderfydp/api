@@ -22,14 +22,14 @@ class BinanceClient {
         let sumFive = 0
         let sumTwentyFive = 0
         for (var i=0; i<Constant.CANDLE_LIMIT; i++){
-            if (candleInterval == CANDLE_INTERVAL_AVG_DIFF){
+            if (candleInterval == StrategyConstant.CANDLE_INTERVAL_AVG_DIFF){
                 if(i < 5){
                     sumFive += parseFloat(candleList[i].close)
                 }
             }
             sumTwentyFive += parseFloat(candleList[i].close)
         }
-        if (candleInterval == CANDLE_INTERVAL_AVG_DIFF){
+        if (candleInterval == StrategyConstant.CANDLE_INTERVAL_AVG_DIFF){
             avgFiveMin = sumFive / 5
         }
         let avgTwentyFive = sumTwentyFive / Constant.CANDLE_LIMIT
