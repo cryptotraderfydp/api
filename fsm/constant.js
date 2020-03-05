@@ -1,4 +1,4 @@
-const Action_Interval = 1000;
+const Action_Interval = 5000;
 const A = 'BTC';
 const B = 'BNB';
 const Strategy_2_Pulling_Interval = 10000;

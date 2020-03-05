@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
-const Init = require('../fsm/fsm');
+const MAStrategy = require('../fsm/fsm');
 const OrderBookStrategy = require('../fsm/fsm-order-book');
 
 var BinanceClient = require("../binance/binanceClient")
@@ -34,7 +34,7 @@ router.post('/start', function(req, res) {
 
     if(strategy == "1"){
         console.log("Strategy 1 (moving avergae line) is selected.");
-        let init_state = new Init();
+        let MAstrategy = new MAStrategy();
     }
 
     if(strategy == "2"){
