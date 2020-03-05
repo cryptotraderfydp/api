@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 
-const MAStrategy = require('../fsm/fsm');
+const MAStrategy = require('../fsm/fsm-moving-average');
 const OrderBookStrategy = require('../fsm/fsm-order-book');
 
 var BinanceClient = require("../binance/binanceClient")
