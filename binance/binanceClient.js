@@ -54,6 +54,19 @@ class BinanceClient {
         const orderResult = await this.binanceClient.order({ symbol: symbol, side: Constant.ORDER_SELL, quantity: quantity, price: price })
         return orderResult
     }
+    async GetCurrentUSDTPrice(symbol){
+        console.log(symbol+"USDT");
+        const lastCandle = await this.binanceClient.candles({ symbol: symbol+"USDT", interval: "1m", limit: 1 })
+        return parseFloat(lastCandle[0].close)
+    }
+    async PlaceMarketBuyOrder(symbol, quantity){
+        const orderResult = await this.binanceClient.order({ symbol: symbol, type: 'MARKET', side: Constant.ORDER_BUY, quantity: quantity})
+        return orderResult
+    }
+    async PlaceMarketSellOrder(symbol, quantity){
+        const orderResult = await this.binanceClient.order({ symbol: symbol, type: 'MARKET', side: Constant.ORDER_SELL, quantity: quantity })
+        return orderResult
+    }
     async GetOrder(symbol, orderId){
         const order = await this.binanceClient.getOrder({ symbol: symbol, orderId: orderId })
         return order
