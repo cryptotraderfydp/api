@@ -25,6 +25,7 @@ class OrderBookStrategy {
         //get current balance
         await this.getCurrentBalance();
         console.log("Current balance:", A, " has", this.Balance_A, ";", B, " has", this.Balance_B);
+        console.log("Current balance:", A, " has", this.Balance_A, ";", B, " has", this.Balance_B);
         this.idle();
     }
 
@@ -44,6 +45,9 @@ class OrderBookStrategy {
         });
         console.log("this.Balance_A is: ", this.Balance_A);
         console.log("this.Balance_B is: ", this.Balance_B);
+
+        const A_B_price = await this.binanceClient.GetCurrentPrice(A+B);
+        console.log("sum in A is: ", Number(this.Balance_A) + Number(this.Balance_B) / Number(A_B_price));
 
         this.A_USDT_price = await this.binanceClient.GetCurrentUSDTPrice(A);
         this.B_USDT_price = await this.binanceClient.GetCurrentUSDTPrice(B);
@@ -96,6 +100,21 @@ class OrderBookStrategy {
 
     // core algorithm
     async algo(){
+        const allOrders = await this.binanceClient.GetAllOrders(A+B);
+        const leftoverOrders = allOrders.filter((order) => order.status === "NEW" || order.status === "PARTIALLY_FILLED");
+        console.log("this.buyOrderId", this.buyOrderId);
+        console.log("this.sellOrderId", this.sellOrderId);
+        console.log("leftoverOrders: ", leftoverOrders);
+        
+        // Promise.all(leftoverOrders.map(order => {
+        //     return this.binanceClient.CancelOrder(A+B, order.orderId);
+        // })).then(() =>console.log("all leftover orders are canceled"));
+
+        leftoverOrders.map(async order => {
+            return await this.binanceClient.CancelOrder(A+B, order.orderId);
+        })
+
+
         await this.getCurrentBalance();
         const orderBook = await this.binanceClient.GetOrderBook(A+B);
         const currentPrice = await this.binanceClient.GetCurrentPrice(A+B);
@@ -104,44 +123,36 @@ class OrderBookStrategy {
         // console.log("order is ", orders);
         //console.log("orderbook ", orderBook);
         
-        this.updateState();
-        // up 80 BNB
-        // down 80 BNB
         const buyPrice = this.getBuyPrice(orderBook.bids);
         const sellPrice = this.getSellPrice(orderBook.asks);
         console.log("buyPrice is: ", buyPrice);
         console.log("sellPrice is: ", sellPrice);
         console.log("currentPrice is: ", currentPrice);
         console.log("gap ratio is ", (sellPrice - buyPrice) / currentPrice)
-        if((sellPrice - buyPrice) / currentPrice < 1.1/1000) {
-            console.log("in algo, gap is not big enough");
-            return;
-        }
+        // if((sellPrice - buyPrice) / currentPrice < 1.2/1000) {
+        //     console.log("in algo, gap is not big enough");
+        //     return;
+        // }
         // const testOrderQuantity = this.changePrecision(this.Balance_A, 2);
         // console.log("testOrderQuantity", testOrderQuantity);
         // const orderResult = await this.binanceClient.PlaceSellOrder(A+B, testOrderQuantity, sellPrice);
         // console.log("orderResult", orderResult);
-        const allOrders = await this.binanceClient.GetAllOrders(A+B);
-        const leftoverOrders = allOrders.filter((order) => order.status === "NEW" || order.status === "PARTIALLY_FILLED");
-        console.log("this.buyOrderId", this.buyOrderId);
-        console.log("this.sellOrderId", this.sellOrderId);
-        console.log("leftoverOrders: ", leftoverOrders);
         
-        Promise.all(leftoverOrders.map(order => {
-            return this.binanceClient.CancelOrder(A+B, order.orderId);
-        })).then(() =>console.log("all leftover orders are canceled"));
-        // if(this.buyOrderId){
-        //     await this.binanceClient.CancelOrder(A+B, this.buyOrderId);
-        // }
-        // if(this.sellOrderId){
-        //     await this.binanceClient.CancelOrder(A+B, this.sellOrderId);
-        // }
+        
+        // await this.getCurrentBalance();
+        this.updateState();
 
         
 
         switch (this.state) {
             case "BUY_SELL":
                 console.log("in BUY_SELL state");
+
+                if((sellPrice - buyPrice) / currentPrice < 1.1/1000) {
+                    console.log("in algo, gap is not big enough");
+                    return;
+                }
+
                 const sellQuantity_BS = this.changePrecision(this.Balance_A * 0.99, 2);
                 const buyQuantity_BS = this.changePrecision(this.Balance_B / currentPrice * 0.99, 2);
                 const quantity = Math.min(sellQuantity_BS, buyQuantity_BS);
@@ -156,7 +167,7 @@ class OrderBookStrategy {
                 console.log("in BUY state");
                 const buyQuantity_BUY = this.changePrecision(this.Balance_sum_USDT / this.A_USDT_price / 2 - this.Balance_A, 2);
                 console.log("placing order, buyQuantity_BUY is: ", buyQuantity_BUY);
-                const buyOrderResult_B = await this.binanceClient.PlaceBuyOrder(A+B, buyQuantity_BUY, buyPrice);
+                const buyOrderResult_B = await this.binanceClient.PlaceMarketBuyOrder(A+B, buyQuantity_BUY);
                 this.sellOrderId = 0;
                 this.buyOrderId = buyOrderResult_B.orderId;
                 break;
@@ -164,7 +175,7 @@ class OrderBookStrategy {
                 console.log("in SELL state");
                 const sellQuantity_SELL = this.changePrecision(this.Balance_A - this.Balance_sum_USDT / this.A_USDT_price / 2, 2);
                 console.log("placing order, sellQuantity_SELL is: ", sellQuantity_SELL);
-                const sellOrderResult_S = await this.binanceClient.PlaceSellOrder(A+B, sellQuantity_SELL, sellPrice);
+                const sellOrderResult_S = await this.binanceClient.PlaceMarketSellOrder(A+B, sellQuantity_SELL);
                 this.sellOrderId = sellOrderResult_S.orderId;
                 this.buyOrderId = 0;
                 break;
