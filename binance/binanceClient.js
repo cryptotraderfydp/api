@@ -5,9 +5,13 @@ var StrategyConstant = require('../strategy/constant')
 
 class BinanceClient {
     constructor(){
-        this.binanceClient = Binance({
+        this.binanceClient = new Binance({
             apiKey:Constant.API_KEY,
             apiSecret:Constant.SECRET_KEY,
+            options: {
+                    adjustForTimeDifference: true,
+                    'recvWindow': 10000000, 
+            }
         })
     }
     async GetMovingAvg(candleInterval){
@@ -55,7 +59,6 @@ class BinanceClient {
         return orderResult
     }
     async GetCurrentUSDTPrice(symbol){
-        console.log(symbol+"USDT");
         const lastCandle = await this.binanceClient.candles({ symbol: symbol+"USDT", interval: "1m", limit: 1 })
         return parseFloat(lastCandle[0].close)
     }
@@ -80,7 +83,7 @@ class BinanceClient {
         return orders
     }
     async GetAccountInfo(){
-        const info = await this.binanceClient.accountInfo()
+        const info = await this.binanceClient.accountInfo();
         return info
     }
 }

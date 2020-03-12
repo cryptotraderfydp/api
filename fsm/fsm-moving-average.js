@@ -31,7 +31,12 @@ let movingAverageStrategy = new MovingAverageStrategy();
 class MAStrategy{
     constructor(){
         console.log("Strategy 1 is initialized.");
-        this.binanceClient = new BinanceClient();
+        this.binanceClient = new BinanceClient({
+            options: {
+                adjustForTimeDifference: true,
+                'recvWindow': 10000000, 
+            }
+        });
         this.clock();
     };
 
@@ -50,7 +55,7 @@ class MAStrategy{
     }
 
     async run(decision){
-
+        
         const accountInfo = await this.binanceClient.GetAccountInfo();
         const balances = accountInfo.balances;
         var balance_coin = 0;
@@ -63,29 +68,33 @@ class MAStrategy{
                 balance_base =  coin.free;
             }
         });
-
+        var price_coin = 0;
+        price_coin = await this.binanceClient.GetCurrentUSDTPrice(Strategy_1_coin);
         console.log('current balance of', Strategy_1_coin ,' is:', balance_coin);
         console.log('current balance of', Strategy_1_base, ' is:', balance_base);
+        console.log('current price of' , Strategy_1_coin, ' is:', price_coin);
         
         if(decision == STRATEGY_HOLD){
             console.log('hold');
         }else if(decision == STRATEGY_SELL){
             console.log('sell');
-            if(balance_coin > 0){
-                const sellResult = await this.binanceClient.PlaceMarketSellOrder(Strategy_1_coin+Strategy_1_base, balance_coin);
-                console.log('sell Result', sellResult);
+            if(balance_coin > balance_base){
+                const quantity = this.changePrecision(balance_coin, 2);
+                const sellResult = await this.binanceClient.PlaceMarketSellOrder(Strategy_1_coin+Strategy_1_base, quantity);
             }
         }else if(decision == STRATEGY_BUY){
             console.log('buy');
-            var price_coin = 0;
-            price_coin = await this.binanceClient.GetCurrentUSDTPrice(Strategy_1_coin);
-            if(balance_base > 0){
+            if(balance_base > balance_coin){
                 var quantity = balance_base/price_coin;
-                quantity = Math.floor(quantity* 100) / 100
+                quantity = this.changePrecision(quantity, 2);
                 const buyResult = await this.binanceClient.PlaceMarketBuyOrder(Strategy_1_coin+Strategy_1_base, quantity);
             }
         }
         
+    }
+
+    changePrecision(price, digit){
+        return Math.floor(Number(price) * Math.pow(10, digit)) /  Math.pow(10, digit);
     }
 
 }

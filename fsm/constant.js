@@ -1,7 +1,7 @@
-const Action_Interval = 900000;
+const Action_Interval = 60000;
 const A = 'BTC';
 const B = 'BNB';
-const Strategy_1_coin = 'BNB';
+const Strategy_1_coin = 'ETH';
 const Strategy_1_base = 'USDT';
 const Strategy_2_Pulling_Interval = 10000;
 

@@ -8,8 +8,6 @@ class MovingAverageStrategy {
     }
     async GetDecision(){
         const movingAvg = await this.binanceClient.GetMovingAvg(Constant.CANDLE_INTERVAL_MOVING_AVG)
-        // console.log(this.prevState)
-        // console.log(movingAvg)
         if (this.prevState === Constant.FIVE_IDLE) {
             if (movingAvg[0] > movingAvg[1]){
                 this.prevState = Constant.FIVE_BIG
